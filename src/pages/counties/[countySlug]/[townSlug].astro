@@ -1,0 +1,40 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Card from '../../../components/Card.astro';
+import counties from '../../../data/counties.json';
+import trades from '../../../data/trades.json';
+
+export function getStaticPaths() {
+  return counties.flatMap((county) =>
+    county.towns.map((town) => ({
+      params: { countySlug: county.slug, townSlug: town },
+      props: { county, town },
+    }))
+  );
+}
+
+const { county, town } = Astro.props;
+const title = `Tradespeople in ${town}, ${county.name} - Find Local Services`;
+const description = `Discover skilled tradespeople in ${town}, ${county.name}. Browse available trades and services in your area.`;
+
+const breadcrumbs = [
+  { text: 'Home', url: '/' },
+  { text: 'Counties', url: '/counties' },
+  { text: county.name, url: `/counties/${county.slug}` },
+  { text: town, url: `/counties/${county.slug}/${town}` }
+];
+---
+
+<Layout title={title} description={description} breadcrumbs={breadcrumbs}>
+	<h1 class="text-4xl font-bold mb-8">Tradespeople in {town}, {county.name}</h1>
+	
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		{trades.map((trade) => (
+			<Card
+				href={`/${trade.slug}/${county.slug}/${town}`}
+				title={`${trade.name} in ${town}`}
+				body={`Find skilled ${trade.name.toLowerCase()} in ${town}, ${county.name}.`}
+			/>
+		))}
+	</div>
+</Layout>

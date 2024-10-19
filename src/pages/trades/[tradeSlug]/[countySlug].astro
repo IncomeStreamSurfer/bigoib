@@ -1,0 +1,43 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Card from '../../../components/Card.astro';
+import counties from '../../../data/counties.json';
+import trades from '../../../data/trades.json';
+
+export function getStaticPaths() {
+  return trades.flatMap((trade) =>
+    counties.map((county) => ({
+      params: { tradeSlug: trade.slug, countySlug: county.slug },
+      props: { trade, county },
+    }))
+  );
+}
+
+const { trade, county } = Astro.props;
+const title = `${trade.name} in ${county.name}, Ireland - Find Local Services`;
+const description = `Discover skilled ${trade.name.toLowerCase()} in ${county.name}, Ireland. Browse available towns to find reliable ${trade.name.toLowerCase()} near you.`;
+
+const breadcrumbs = [
+  { text: 'Home', url: '/' },
+  { text: 'Trades', url: '/trades' },
+  { text: trade.name, url: `/trades/${trade.slug}` },
+  { text: county.name, url: `/trades/${trade.slug}/${county.slug}` }
+];
+---
+
+<Layout title={title} description={description} breadcrumbs={breadcrumbs}>
+	<h1 class="text-4xl font-bold mb-8">{trade.name} in {county.name}</h1>
+	
+	<section>
+		<h2 class="text-2xl font-semibold mb-4">Towns</h2>
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			{county.towns.map((town) => (
+				<Card
+					href={`/trades/${trade.slug}/${county.slug}/${town}`}
+					title={`${trade.name} in ${town}`}
+					body={`Find skilled ${trade.name.toLowerCase()} in ${town}, ${county.name}.`}
+				/>
+			))}
+		</div>
+	</section>
+</Layout>

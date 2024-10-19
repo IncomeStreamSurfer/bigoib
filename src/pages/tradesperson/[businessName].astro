@@ -1,0 +1,87 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fetchSingleBusiness, fetchBusinessDetails } from '../../utils/dataForSeo.js';
+
+export function getStaticPaths() {
+  // In a real scenario, you'd generate this list dynamically
+  return [
+    { params: { businessName: 'example-business' } },
+  ];
+}
+
+const { businessName } = Astro.params;
+const decodedBusinessName = decodeURIComponent(businessName.replace(/-/g, ' '));
+const business = await fetchSingleBusiness(decodedBusinessName);
+let businessDetails = null;
+
+if (business && business.id) {
+  businessDetails = await fetchBusinessDetails(business.id);
+}
+
+// Prepare breadcrumbs
+const breadcrumbs = [
+  { text: 'Home', url: '/' },
+  { text: decodedBusinessName, url: `/tradesperson/${businessName}` }
+];
+---
+
+<Layout title={`Review of ${business?.title || decodedBusinessName}`} breadcrumbs={breadcrumbs}>
+	<main>
+		{business ? (
+			<>
+				<h1>Review of {business.title}</h1>
+				<p>Rating: {business.rating?.value || 'N/A'} out of 5 - Contact TODAY</p>
+				<h2>Details</h2>
+				<p>Address: {business.address || 'N/A'}</p>
+				<p>Phone: {business.phone || 'N/A'}</p>
+				<h2>Reviews</h2>
+				<p>Number of reviews: {business.rating?.votes || 'N/A'}</p>
+				{business.snippet && <p>Snippet: {business.snippet}</p>}
+				{business.website && <p>Website: <a href={business.website} target="_blank" rel="noopener noreferrer">{business.website}</a></p>}
+				{business.hours && <p>Hours: {business.hours}</p>}
+				{businessDetails && (
+					<>
+						<h2>Additional Details</h2>
+						{businessDetails.place_id && <p>Place ID: {businessDetails.place_id}</p>}
+						{businessDetails.category && <p>Category: {businessDetails.category}</p>}
+						{businessDetails.price_range && <p>Price Range: {businessDetails.price_range}</p>}
+						{businessDetails.reviews_link && (
+							<p>
+								<a href={businessDetails.reviews_link} target="_blank" rel="noopener noreferrer">
+									Read all reviews
+								</a>
+							</p>
+						)}
+					</>
+				)}
+			</>
+		) : (
+			<p>No information found for {decodedBusinessName}.</p>
+		)}
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+	}
+	h1, h2 {
+		margin-bottom: 1rem;
+	}
+	p {
+		margin-bottom: 0.5rem;
+	}
+	a {
+		color: #00aaff;
+		text-decoration: none;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+</style>

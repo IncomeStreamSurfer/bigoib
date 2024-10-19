@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Card from '../../components/Card.astro';
+import trades from '../../data/trades.json';
+
+const title = "Trades in Ireland - Find Skilled Professionals";
+const description = "Browse all available trades in Ireland. Find skilled professionals for your project needs across various sectors.";
+
+const breadcrumbs = [
+  { text: 'Home', url: '/' },
+  { text: 'Trades', url: '/trades' }
+];
+---
+
+<Layout title={title} description={description} breadcrumbs={breadcrumbs}>
+	<h1 class="text-4xl font-bold mb-8">Trades in Ireland</h1>
+	
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		{trades.map((trade) => (
+			<Card
+				href={`/trades/${trade.slug}`}
+				title={trade.name}
+				body={`Find skilled ${trade.name.toLowerCase()} across Ireland. Browse available locations and services.`}
+			/>
+		))}
+	</div>
+</Layout>

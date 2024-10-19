@@ -1,0 +1,18 @@
+{
+  "name": "trades-locations-website",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "npm run generate-sitemap && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "generate-sitemap": "node src/utils/generateSitemap.js"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^5.5.4",
+    "astro": "^4.15.3",
+    "sitemap": "^7.1.1"
+  }
+}
